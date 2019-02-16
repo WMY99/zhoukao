@@ -1,0 +1,1 @@
+var dl=document.querySelectorAll("dl");function a(l,e){box.style.background=e}
