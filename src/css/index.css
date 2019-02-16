@@ -38,3 +38,19 @@
 .footer {
   width: 100%;
   height: 40px; }
+
+.swiper-container {
+  width: 100%;
+  height: 200px; }
+  .swiper-container .swiper-wrapper {
+    width: 100%;
+    height: 100%; }
+    .swiper-container .swiper-wrapper .swiper-slide {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around; }
+      .swiper-container .swiper-wrapper .swiper-slide dl {
+        width: 20%;
+        text-align: center; }

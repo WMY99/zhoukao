@@ -47,3 +47,23 @@
     width: 100%;
     height: 40px;
 }
+
+.swiper-container {
+    width: 100%;
+    height: 200px;
+    .swiper-wrapper {
+        width: 100%;
+        height: 100%;
+        .swiper-slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            dl {
+                width: 20%;
+                text-align: center;
+            }
+        }
+    }
+}
