@@ -2,7 +2,7 @@
  * @Author: 王美悦 
  * @Date: 2019-02-18 08:42:45 
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-02-18 09:40:15
+ * @Last Modified time: 2019-02-18 09:48:01
  */
 
 var gulp = require("gulp")
@@ -29,7 +29,7 @@ gulp.task("script", function() {
         .pipe(babel({
             presets: ['@babel/env']
         }))
-        .pipe(scripts("all.js"))
+        .pipe(hejs("all.js"))
         .pipe(gulp.dest("./dest/js"))
 })
 
@@ -37,22 +37,23 @@ gulp.task("script", function() {
 gulp.task("server", function() {
     return gulp.src("./src")
         .pipe(server({
-            port: "8080",
+            port: 8080,
             host: "169.254.213.215",
-            liverename: true,
             open: true,
+            livereload: true,
             middleware: function(req, res, next) {
-                //
                 var pathname = url.parse(req.url).pathname
                 if (pathname === "/favicon.ico") {
-                    res.end("1")
+                    return res.end()
                 } else {
                     pathname = pathname === "/" ? "index.html" : pathname
-                    res.end(fs.readFileSync(path.join(__dirname, "src", pathname)))
+                    return res.end(fs.readFileSync(path.join(__dirname, "src", pathname)))
                 }
                 next()
             }
+
         }))
+
 })
 
 //并把文件生成到dist文件夹
@@ -61,34 +62,38 @@ gulp.task("build", function() {
         .pipe(gulp.dest("./dist"))
 })
 
+
 //监听css  js
-gulp.task("lis", function() {
-    return gulp.watch(["./src/scss/**/*.scss", "./src/js/**/*.js"], gulp.series("addcss", "script", "build"))
+gulp.task("auto", function() {
+    return gulp.watch(["./src/scss/**/*.scss", "./src/js/**/*.js"], gulp.parallel("addcss", "script", "build"))
 })
 
 //监听所有
-gulp.task("default", function() {
-    return gulp.watch("./src", gulp.series("addcss", "script", "zipall", "server", "lis"))
-})
-
-
+gulp.task("default", gulp.series("addcss", "script", "server", "auto"))
 
 
 //压缩css
 gulp.task("zipcss", function() {
-    return gulp.src("./src/css/**/*.css")
-        .pipe(cssmin())
-        .pipe(gulp.dest("./dest/css"))
-})
-
-//压缩js
+        return gulp.src("./src/css/**/*.css")
+            .pipe(cssmin())
+            .pipe(gulp.dest("./dest/css"))
+    })
+    //压缩js
 gulp.task("zipjs", function() {
     return gulp.src("./src/js/**/*.js")
-        .pipe(jsmin())
+        .pipe(js())
         .pipe(gulp.dest("./dest/js"))
 })
 
-//监听
-gulp.task("zipall", function() {
-    return gulp.watch(["./src/css/**/*.css", "./src/js/**/*.js"], gulp.parallel("zipcss", "zipjs"))
+//压缩html
+gulp.task("html", function() {
+    return gulp.src(["./rev/**/*.json", "./src/**/*.html"])
+        .pipe(ziphtml())
+        .pipe(collector({
+            replaceReved: true,
+        }))
+        .pipe(gulp.dest("./dest"))
 })
+
+//监听
+gulp.task("zipall", gulp.parallel("zipjs", "zipcss", "html"))
